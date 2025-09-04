@@ -70,7 +70,7 @@ export default function Dashboard() {
           {/* discover unique listing ids */}
           {[...new Set(list.map(r => r.listing))].map((listing, i) => (
             <li key={i}>
-              <Link href={`/property/${encodeURIComponent(listing)}`}><a>{listing}</a></Link>
+              <Link href={`/property/${encodeURIComponent(listing)}`}>{listing}</Link>
             </li>
           ))}
         </ul>
