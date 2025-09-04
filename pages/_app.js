@@ -1,4 +1,4 @@
-import { Analytics } from '@vercel/analytics';
+import { Analytics } from "@vercel/analytics/next";
 
 function MyApp({ Component, pageProps }) {
   return (
