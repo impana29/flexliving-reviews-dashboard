@@ -1,79 +1,36 @@
-// pages/api/reviews/hostaway.js
-import fs from "fs";
 import path from "path";
-
-// Normalizer function
-function normalize(raw) {
-  const categories = (raw.reviewCategory || []).map(c => ({
-    category: c.category,
-    rating: c.rating
-  }));
-
-  let rating = raw.rating;
-  if (rating == null) {
-    if (categories.length) {
-      const avg = categories.reduce((s, c) => s + (c.rating || 0), 0) / categories.length;
-      rating = Math.round((avg / 2) * 10) / 10; // scale 0–10 into ~0–5
-    } else {
-      rating = null;
-    }
-  }
-
-  return {
-    id: raw.id,
-    listingName: raw.listingName,
-    guestName: raw.guestName,
-    publicReview: raw.publicReview,
-    rating,
-    categories,
-    date: raw.submittedAt,
-    channel: raw.channel || "hostaway",
-    type: raw.type,
-    status: raw.status
-  };
-}
+import { promises as fs } from "fs";
 
 export default async function handler(req, res) {
-  try {
-    const useHostaway = process.env.USE_HOSTAWAY_API === "true";
+  // Read mock data file
+  const jsonPath = path.join(process.cwd(), "data", "mock_reviews.json");
+  const jsonStr = await fs.readFile(jsonPath, "utf8");
+  const raw = JSON.parse(jsonStr);
 
-    let reviewsData;
+  // Normalize
+  const normalized = (raw.result || []).map(r => {
+    const categories = (r.reviewCategory || []).reduce((acc, c) => {
+      acc[c.category] = c.rating;
+      return acc;
+    }, {});
+    return {
+      id: r.id,
+      listing: r.listingName,
+      date: new Date(r.submittedAt).toISOString(),
+      type: r.type,
+      status: r.status,
+      rating: r.rating === null ? average(Object.values(categories)) : r.rating,
+      text: r.publicReview,
+      guestName: r.guestName,
+      categories
+    };
+  });
 
-    if (useHostaway) {
-      // Call Hostaway Sandbox API
-      const accountId = process.env.HOSTAWAY_ACCOUNT_ID;
-      const apiKey = process.env.HOSTAWAY_API_KEY;
-
-      const response = await fetch(
-        `https://sandbox.hostaway.com/v1/reviews?accountId=${accountId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${apiKey}`,
-            "Content-Type": "application/json"
-          }
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`Hostaway API failed: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      reviewsData = data.result || [];
-    } else {
-      // Use local mock JSON
-      const filePath = path.join(process.cwd(), "public", "mock-reviews.json");
-      const fileContents = fs.readFileSync(filePath, "utf8");
-      const parsed = JSON.parse(fileContents);
-      reviewsData = parsed.result || [];
-    }
-
-    const normalized = reviewsData.map(normalize);
-
-    res.status(200).json({ status: "ok", reviews: normalized });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to fetch reviews", details: err.message });
-  }
+  res.status(200).json({ status: "ok", data: normalized });
 }
 
+function average(arr) {
+  const nums = arr.filter(v => typeof v === "number");
+  if (!nums.length) return null;
+  return Math.round(nums.reduce((a,b)=>a+b,0)/nums.length);
+}
