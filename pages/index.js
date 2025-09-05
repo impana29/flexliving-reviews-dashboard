@@ -7,7 +7,7 @@ export default function Home() {
       <p className="text-gray-600">Manager tools to view and approve reviews for property pages.</p>
 
       <div className="space-x-4">
-        <Link href="/dashboard"><a className="px-4 py-2 bg-blue-600 text-white rounded">Open Dashboard</a></Link>
+        <Link href="/dashboard">Open Dashboard</Link>
       </div>
 
       <div className="mt-8">
