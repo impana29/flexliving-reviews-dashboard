@@ -18,4 +18,3 @@ export default function Filters({ filters, onChange }) {
     </div>
   );
 }
-
