@@ -43,7 +43,7 @@ export default function Dashboard() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Manager Dashboard</h1>
-        <Link href="/"><a className="text-sm text-blue-600">Back to home</a></Link>
+        <Link href="/">Back to home</Link>
       </div>
 
       <Filters filters={filters} onChange={setFilters} />
@@ -70,7 +70,7 @@ export default function Dashboard() {
           {/* discover unique listing ids */}
           {[...new Set(list.map(r => r.listing))].map((listing, i) => (
             <li key={i}>
-              <Link href={`/property/${encodeURIComponent(listing)}`}><a>{listing}</a></Link>
+              <Link href={`/property/${encodeURIComponent(listing)}`}>{listing}</Link>
             </li>
           ))}
         </ul>
