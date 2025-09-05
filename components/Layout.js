@@ -5,9 +5,9 @@ export default function Layout({ children }) {
     <div className="min-h-screen">
       <header className="bg-white shadow-sm">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/"><a className="font-bold text-lg">FlexLiving Dashboard</a></Link>
+          <Link href="/">FlexLiving Dashboard</Link>
           <nav className="space-x-4">
-            <Link href="/dashboard"><a className="text-sm">Manager Dashboard</a></Link>
+            <Link href="/dashboard">Manager Dashboard</Link>
           </nav>
         </div>
       </header>
