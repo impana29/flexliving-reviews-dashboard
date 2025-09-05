@@ -33,4 +33,3 @@ export default function ReviewCard({ r, onToggleApprove, approved }) {
     </div>
   );
 }
-
